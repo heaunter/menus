@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.SysMutiLangDao">
+
+    <resultMap id="MutiLangModelResultMap" type="com.vota.reservation.modules.cms.entity.model.MutiLangModel">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="langKey" column="lang_key" jdbcType="VARCHAR"/>
+        <result property="langValue" column="lang_value" jdbcType="VARCHAR"/>
+        <result property="langLocale" column="lang_locale" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.MutiLangModel">
+        INSERT INTO sys_muti_lang (lang_key,lang_value,lang_locale,create_time,update_time)
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{id, jdbcType=BIGINT},
+            #{langKey, jdbcType=VARCHAR},
+            #{langValue, jdbcType=VARCHAR},
+            #{langLocale, jdbcType=VARCHAR},
+            #{createTime, jdbcType=TIMESTAMP},
+            #{updateTime, jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO sys_muti_lang (lang_key,lang_value,lang_locale,create_time,update_time)
+        <trim prefix="VALUES" suffixOverrides=",">
+            <if test="list != null">
+                <foreach collection="list" item="item" index="index" separator=",">
+                    <trim prefix="(" suffix=")" suffixOverrides=",">
+                        #{item.id, jdbcType=BIGINT},
+                        #{item.langKey, jdbcType=VARCHAR},
+                        #{item.langValue, jdbcType=VARCHAR},
+                        #{item.langLocale, jdbcType=VARCHAR},
+                        #{item.createTime, jdbcType=TIMESTAMP},
+                        #{item.updateTime, jdbcType=TIMESTAMP},
+                    </trim>
+                </foreach>
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.MutiLangModel">
+        INSERT INTO sys_muti_lang
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="langKey != null">lang_key,</if>
+            <if test="langValue != null">lang_value,</if>
+            <if test="langLocale != null">lang_locale,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id, jdbcType=BIGINT},</if>
+            <if test="langKey != null">#{langKey, jdbcType=VARCHAR},</if>
+            <if test="langValue != null">#{langValue, jdbcType=VARCHAR},</if>
+            <if test="langLocale != null">#{langLocale, jdbcType=VARCHAR},</if>
+            <if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">#{updateTime, jdbcType=TIMESTAMP},</if>
+        </trim>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="MutiLangModelResultMap" parameterType="java.lang.Long">
+        SELECT id,lang_key,lang_value,lang_locale,create_time,update_time FROM sys_muti_lang
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="selectBatchByPrimaryKey" resultMap="MutiLangModelResultMap" parameterType="java.util.List">
+        SELECT id,lang_key,lang_value,lang_locale,create_time,update_time FROM sys_muti_lang
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByParams" resultMap="MutiLangModelResultMap" parameterType="java.util.HashMap">
+        SELECT id,lang_key,lang_value,lang_locale,create_time,update_time FROM sys_muti_lang
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="langKey != null">
+                AND lang_key = #{langKey, jdbcType=VARCHAR}
+            </if>
+            <if test="langValue != null">
+                AND lang_value = #{langValue, jdbcType=VARCHAR}
+            </if>
+            <if test="langLocale != null">
+                AND lang_locale = #{langLocale, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC
+        <if test="offset != null and size != null">LIMIT #{offset}, #{size}</if>
+    </select>
+
+    <select id="countByParams" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        SELECT COUNT(1) FROM sys_muti_lang
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="langKey != null">
+                AND lang_key = #{langKey, jdbcType=VARCHAR}
+            </if>
+            <if test="langValue != null">
+                AND lang_value = #{langValue, jdbcType=VARCHAR}
+            </if>
+            <if test="langLocale != null">
+                AND lang_locale = #{langLocale, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFirstByParams" resultMap="MutiLangModelResultMap" parameterType="java.util.HashMap">
+        SELECT id,lang_key,lang_value,lang_locale,create_time,update_time FROM sys_muti_lang
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="langKey != null">
+                AND lang_key = #{langKey, jdbcType=VARCHAR}
+            </if>
+            <if test="langValue != null">
+                AND lang_value = #{langValue, jdbcType=VARCHAR}
+            </if>
+            <if test="langLocale != null">
+                AND lang_locale = #{langLocale, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.vota.reservation.modules.cms.entity.model.MutiLangModel">
+        UPDATE sys_muti_lang
+        <set>
+            <if test="langKey != null">lang_key = #{langKey, jdbcType=VARCHAR},</if>
+            <if test="langValue != null">lang_value = #{langValue, jdbcType=VARCHAR},</if>
+            <if test="langLocale != null">lang_locale = #{langLocale, jdbcType=VARCHAR},</if>
+            <if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.vota.reservation.modules.cms.entity.model.MutiLangModel">
+        UPDATE sys_muti_lang
+        <set>
+            lang_key = #{langKey, jdbcType=VARCHAR},
+            lang_value = #{langValue, jdbcType=VARCHAR},
+            lang_locale = #{langLocale, jdbcType=VARCHAR},
+            create_time = #{createTime, jdbcType=TIMESTAMP},
+            update_time = #{updateTime, jdbcType=TIMESTAMP},
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM sys_muti_lang
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteBatchByPrimaryKey" parameterType="java.util.List">
+        DELETE FROM sys_muti_lang
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="deleteByParams" parameterType="java.util.HashMap">
+        DELETE FROM sys_muti_lang
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="langKey != null">
+                AND lang_key = #{langKey, jdbcType=VARCHAR}
+            </if>
+            <if test="langValue != null">
+                AND lang_value = #{langValue, jdbcType=VARCHAR}
+            </if>
+            <if test="langLocale != null">
+                AND lang_locale = #{langLocale, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+</mapper>

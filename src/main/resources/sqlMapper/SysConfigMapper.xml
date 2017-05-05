@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.SysConfigDao">
+
+	<resultMap id="BizSysConfigModelResultMap" type="com.vota.reservation.modules.cms.entity.model.SysConfigModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="code" column="code" jdbcType="VARCHAR" />
+		<result property="label" column="label" jdbcType="VARCHAR" />
+		<result property="value" column="value" jdbcType="VARCHAR" />
+		<result property="description" column="description" jdbcType="VARCHAR" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<!-- 获取APP最新的版本 -->
+	<select id="getConfiguration" resultMap="BizSysConfigModelResultMap"
+		parameterType="string">
+		<![CDATA[
+			SELECT * FROM sys_config WHERE code = #{code}
+		]]>
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.SysConfigModel">
+		INSERT INTO sys_config
+		(code,label,value,description,create_time,update_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=BIGINT},
+			#{code,jdbcType=VARCHAR},
+			#{label,jdbcType=VARCHAR},
+			#{value,jdbcType=VARCHAR},
+			#{description,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateTime,jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<update id="updateConfig" parameterType="string">
+		UPDATE sys_config set value = #{value}
+		WHERE code = #{code}
+	</update>
+
+</mapper>

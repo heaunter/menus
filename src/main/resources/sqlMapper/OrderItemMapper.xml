@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.OrderItemDao">
+
+    <resultMap id="OrderItemModelResultMap"
+               type="com.vota.reservation.modules.cms.entity.model.OrderItemModel">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+        <result property="productId" column="product_id" jdbcType="BIGINT"/>
+        <result property="productName" column="product_name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="DOUBLE"/>
+        <result property="count" column="count" jdbcType="INTEGER"/>
+        <result property="mark" column="mark" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.OrderItemModel">
+        INSERT INTO order_item
+        (order_id,product_name,price,count,mark,create_time,update_time)
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{id, jdbcType=BIGINT},
+            #{orderId, jdbcType=BIGINT},
+            #{productName, jdbcType=VARCHAR},
+            #{price, jdbcType=DOUBLE},
+            #{count, jdbcType=INTEGER},
+            #{mark, jdbcType=VARCHAR},
+            #{createTime, jdbcType=TIMESTAMP},
+            #{updateTime, jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO order_item
+        (order_id,product_name,price,count,mark,create_time,update_time)
+        <trim prefix="VALUES" suffixOverrides=",">
+            <if test="list != null">
+                <foreach collection="list" item="item" index="index"
+                         separator=",">
+                    <trim prefix="(" suffix=")" suffixOverrides=",">
+                        #{item.id, jdbcType=BIGINT},
+                        #{item.orderId, jdbcType=BIGINT},
+                        #{item.productName, jdbcType=VARCHAR},
+                        #{item.price, jdbcType=DOUBLE},
+                        #{item.count, jdbcType=INTEGER},
+                        #{item.mark, jdbcType=VARCHAR},
+                        #{item.createTime, jdbcType=TIMESTAMP},
+                        #{item.updateTime, jdbcType=TIMESTAMP},
+                    </trim>
+                </foreach>
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true"
+            keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.OrderItemModel">
+        INSERT INTO order_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="price != null">price,</if>
+            <if test="count != null">count,</if>
+            <if test="mark != null">mark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id, jdbcType=BIGINT},</if>
+            <if test="orderId != null">#{orderId, jdbcType=BIGINT},</if>
+            <if test="productName != null">#{productName, jdbcType=VARCHAR},</if>
+            <if test="price != null">#{price, jdbcType=DOUBLE},</if>
+            <if test="count != null">#{count, jdbcType=INTEGER},</if>
+            <if test="mark != null">#{mark, jdbcType=VARCHAR},</if>
+            <if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">#{updateTime, jdbcType=TIMESTAMP},</if>
+        </trim>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="OrderItemModelResultMap"
+            parameterType="java.lang.Long">
+        SELECT id,order_id,product_name,price,count,mark,create_time,update_time
+        FROM order_item
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="selectBatchByPrimaryKey" resultMap="OrderItemModelResultMap"
+            parameterType="java.util.List">
+        SELECT id,order_id,product_name,price,count,mark,create_time,update_time
+        FROM order_item
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByParams" resultMap="OrderItemModelResultMap"
+            parameterType="java.util.HashMap">
+        SELECT id,order_id,product_name,price,count,create_time,update_time
+        FROM order_item
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                AND order_id = #{orderId, jdbcType=BIGINT}
+            </if>
+            <if test="productName != null">
+                AND product_name = #{productName, jdbcType=VARCHAR}
+            </if>
+            <if test="price != null">
+                AND price = #{price, jdbcType=DOUBLE}
+            </if>
+            <if test="count != null">
+                AND count = #{count, jdbcType=INTEGER}
+            </if>
+            <if test="mark != null">
+                AND mark = #{mark, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC
+        <if test="offset != null and size != null">LIMIT #{offset}, #{size}</if>
+    </select>
+
+    <select id="countByParams" resultType="java.lang.Integer"
+            parameterType="java.util.HashMap">
+        SELECT COUNT(1) FROM order_item
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                AND order_id = #{orderId, jdbcType=BIGINT}
+            </if>
+            <if test="productName != null">
+                AND product_name = #{productName, jdbcType=VARCHAR}
+            </if>
+            <if test="price != null">
+                AND price = #{price, jdbcType=DOUBLE}
+            </if>
+            <if test="count != null">
+                AND count = #{count, jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFirstByParams" resultMap="OrderItemModelResultMap"
+            parameterType="java.util.HashMap">
+        SELECT id,order_id,product_name,price,count,create_time,update_time
+        FROM order_item
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                AND order_id = #{orderId, jdbcType=BIGINT}
+            </if>
+            <if test="productName != null">
+                AND product_name = #{productName, jdbcType=VARCHAR}
+            </if>
+            <if test="price != null">
+                AND price = #{price, jdbcType=DOUBLE}
+            </if>
+            <if test="count != null">
+                AND count = #{count, jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.vota.reservation.modules.cms.entity.model.OrderItemModel">
+        UPDATE order_item
+        <set>
+            <if test="orderId != null">order_id = #{orderId, jdbcType=BIGINT},</if>
+            <if test="productName != null">product_name = #{productName, jdbcType=VARCHAR},</if>
+            <if test="price != null">price = #{price, jdbcType=DOUBLE},</if>
+            <if test="count != null">count = #{count, jdbcType=INTEGER},</if>
+            <if test="mark != null">mark = #{mark, jdbcType=VARCHAR},</if>
+            <if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKey"
+            parameterType="com.vota.reservation.modules.cms.entity.model.OrderItemModel">
+        UPDATE order_item
+        <set>
+            order_id = #{orderId, jdbcType=BIGINT},
+            product_name = #{productName, jdbcType=VARCHAR},
+            price = #{price, jdbcType=DOUBLE},
+            count = #{count, jdbcType=INTEGER},
+            mark = #{mark, jdbcType=VARCHAR},
+            create_time = #{createTime, jdbcType=TIMESTAMP},
+            update_time = #{updateTime, jdbcType=TIMESTAMP},
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM order_item
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteBatchByPrimaryKey" parameterType="java.util.List">
+        DELETE FROM order_item
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="deleteByParams" parameterType="java.util.HashMap">
+        DELETE FROM order_item
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                AND order_id = #{orderId, jdbcType=BIGINT}
+            </if>
+            <if test="productName != null">
+                AND product_name = #{productName, jdbcType=VARCHAR}
+            </if>
+            <if test="price != null">
+                AND price = #{price, jdbcType=DOUBLE}
+            </if>
+            <if test="count != null">
+                AND count = #{count, jdbcType=INTEGER}
+            </if>
+            <if test="mark != null">
+                AND mark = #{mark, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+</mapper>

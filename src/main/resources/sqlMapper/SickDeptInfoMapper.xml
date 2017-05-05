@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.SickDeptInfoDao">
+
+	<resultMap id="SickDeptInfoModelResultMap" type="com.vota.reservation.modules.cms.entity.model.SickDeptInfoModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="deptNo" column="dept_no" jdbcType="VARCHAR" />
+		<result property="deptName" column="dept_name" jdbcType="VARCHAR" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="SickAreaInfoModelResultMap" type="com.vota.reservation.modules.cms.entity.model.SickAreaInfoModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="deptId" column="dept_id" jdbcType="BIGINT" />
+		<result property="areaNo" column="area_no" jdbcType="VARCHAR" />
+		<result property="areaName" column="area_name" jdbcType="VARCHAR" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="SickBedInfoModelResultMap" type="com.vota.reservation.modules.cms.entity.model.SickBedInfoModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="deptId" column="dept_id" jdbcType="BIGINT" />
+		<result property="areaId" column="area_id" jdbcType="BIGINT" />
+		<result property="bedName" column="bed_name" jdbcType="VARCHAR" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="SickDeptInfoBeanResultMap" type="com.vota.reservation.modules.cms.entity.bean.DeptInfoBean">
+		<id property="deptId" column="id" jdbcType="BIGINT" />
+		<result property="deptNo" column="dept_no" jdbcType="VARCHAR" />
+		<result property="deptName" column="dept_name" jdbcType="VARCHAR" />
+		<result property="updateTime" column="dept_update_time" jdbcType="TIMESTAMP" />
+		<collection property="bedInfos" column="dept_id"
+			ofType="com.vota.reservation.modules.cms.entity.bean.BedInfoBean">
+			<id property="bedId" column="bed_id" jdbcType="BIGINT" />
+			<result property="bedName" column="bed_name" jdbcType="VARCHAR" />
+			<result property="updateTime" column="bed_update_time" jdbcType="TIMESTAMP" />
+		</collection>
+	</resultMap>
+
+
+	<select id="getAllDepts" resultMap="SickDeptInfoBeanResultMap">
+		select
+		d.id,d.dept_no,d.dept_name,d.update_time
+		as dept_update_time,
+		b.id as
+		bed_id,b.bed_name,b.update_time as bed_update_time
+		from
+		sick_dept_info
+		d left join sick_bed_info b on d.id = b.dept_id
+		ORDER BY
+		convert(d.dept_name using GBK) ASC
+	</select>
+
+	<select id="getDepts" resultMap="SickDeptInfoModelResultMap">
+		select * from sick_dept_info ORDER BY
+		convert(dept_name using GBK) ASC
+	</select>
+
+	<select id="getDeptInfo" resultType="com.vota.reservation.modules.cms.entity.model.SickDeptInfoModel">
+		SELECT
+		id,dept_no,dept_name,create_time,update_time FROM
+		sick_dept_info WHERE dept_no =
+		#{deptNo}
+	</select>
+
+	<insert id="saveDeptInformation" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.SickDeptInfoModel">
+		INSERT INTO sick_dept_info (dept_no,dept_name,create_time,update_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{deptNo, jdbcType=VARCHAR},
+			#{deptName, jdbcType=VARCHAR},
+			#{createTime, jdbcType=TIMESTAMP},
+			#{updateTime,
+			jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<update id="updateDeptInformation" parameterType="com.vota.reservation.modules.cms.entity.model.SickDeptInfoModel">
+		UPDATE sick_dept_info
+		<set>
+			<if test="deptName != null">dept_name = #{deptName, jdbcType=VARCHAR},</if>
+			<if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			dept_no = #{deptNo, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<select id="getBedInformation" resultMap="SickBedInfoModelResultMap">
+		SELECT * FROM sick_bed_info WHERE dept_id
+		= #{id} and bed_name = #{bedNo}
+	</select>
+
+	<select id="getDeptsByIds" resultMap="SickDeptInfoModelResultMap">
+		SELECT id,dept_no,dept_name,create_time,update_time FROM
+		sick_dept_info
+		<where>
+			<if test="list != null">
+				<foreach collection="list" index="index" item="id" open=" id IN (" separator=","
+					close=")">
+					#{id, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY convert(dept_name using GBK) ASC
+	</select>
+
+	<select id="getAreasByNos" resultMap="SickAreaInfoModelResultMap">
+		SELECT distinct area_no,area_name FROM
+		sick_area_info
+		<where>
+			<if test="list != null">
+				<foreach collection="list" index="index" item="areaNo" open=" area_no IN (" separator=","
+					close=")">
+					#{areaNo, jdbcType=BIGINT}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY convert(area_name using GBK) ASC
+	</select>
+
+	<insert id="saveBedInformation" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.SickBedInfoModel">
+		INSERT INTO sick_bed_info (dept_id,area_id,bed_name,create_time,update_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{deptId, jdbcType=BIGINT},
+			#{areaId, jdbcType=BIGINT},
+			#{bedName, jdbcType=VARCHAR},
+			#{createTime,
+			jdbcType=TIMESTAMP},
+			#{updateTime,
+			jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<update id="updateBedInformation">
+		UPDATE sick_bed_info
+		<set>
+			dept_id = #{deptId, jdbcType=BIGINT},
+			area_id = #{areaId, jdbcType=BIGINT},
+			bed_name
+			= #{bedName, jdbcType=VARCHAR},
+			create_time = #{createTime, jdbcType=TIMESTAMP},
+			update_time = #{updateTime,
+			jdbcType=TIMESTAMP},
+		</set>
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<select id="getAllAreaInfos" resultMap="SickAreaInfoModelResultMap">
+		select
+		ai.id,ai.dept_id,ai.area_no,ai.create_time,ai.update_time,concat(di.dept_name,'[',ai.area_name,']')
+		as area_name from sick_area_info ai
+		left join sick_dept_info di on ai.dept_id = di.id
+		ORDER BY convert(concat(di.dept_name,'[',ai.area_name,']') using GBK) ASC
+	</select>
+
+	<select id="getDistinctAreas" resultMap="SickAreaInfoModelResultMap">
+		select distinct ai.area_no,ai.area_name
+		from sick_area_info ai
+		ORDER BY convert(ai.area_name using GBK) ASC
+	</select>
+
+	<insert id="saveAreaInformation" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.SickAreaInfoModel">
+		INSERT INTO sick_area_info (dept_id,area_no,area_name,create_time,update_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{deptId, jdbcType=BIGINT},
+			#{areaNo, jdbcType=VARCHAR},
+			#{areaName, jdbcType=VARCHAR},
+			#{createTime,
+			jdbcType=TIMESTAMP},
+			#{updateTime, jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<select id="getAreaInformation" resultType="com.vota.reservation.modules.cms.entity.model.SickAreaInfoModel">
+		select * from sick_area_info where
+		dept_id = #{id} and area_no = #{areaNo}
+	</select>
+
+	<update id="updateAreaInformation" parameterType="com.vota.reservation.modules.cms.entity.model.SickAreaInfoModel">
+		UPDATE sick_area_info
+		<set>
+			<if test="areaName != null">area_name = #{areaName, jdbcType=VARCHAR},</if>
+			<if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			dept_id = #{deptId, jdbcType=BIGINT} and area_no = #{areaNo, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.SysLogDao">
+	<resultMap id="SysLogModelResultMap" type="com.vota.reservation.modules.cms.entity.model.SysLogModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="requestUri" column="request_uri" jdbcType="VARCHAR" />
+		<result property="requestObject" column="request_object" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="SMALLINT" />
+		<result property="remoteAddr" column="remote_addr" jdbcType="VARCHAR" />
+		<result property="method" column="method" jdbcType="VARCHAR" />
+		<result property="params" column="params" jdbcType="LONGVARCHAR" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<insert id="saveLog" parameterType="com.vota.reservation.modules.cms.entity.model.SysLogModel">
+		INSERT INTO sys_log (request_uri,request_object,type,remote_addr,method,params,create_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{id, jdbcType=BIGINT},
+			#{requestUri, jdbcType=VARCHAR},
+			#{requestObject, jdbcType=VARCHAR},
+			#{type, jdbcType=SMALLINT},
+			#{remoteAddr, jdbcType=VARCHAR},
+			#{method, jdbcType=VARCHAR},
+			#{params, jdbcType=LONGVARCHAR},
+			#{createTime, jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.SysLogModel">
+		INSERT INTO sys_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="requestUri != null">request_uri,</if>
+			<if test="requestObject != null">request_object,</if>
+			<if test="type != null">type,</if>
+			<if test="remoteAddr != null">remote_addr,</if>
+			<if test="method != null">method,</if>
+			<if test="params != null">params,</if>
+			<if test="createTime != null">create_time,</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id, jdbcType=BIGINT},</if>
+			<if test="requestUri != null">#{requestUri, jdbcType=VARCHAR},</if>
+			<if test="requestObject != null">#{requestObject, jdbcType=VARCHAR},</if>
+			<if test="type != null">#{type, jdbcType=SMALLINT},</if>
+			<if test="remoteAddr != null">#{remoteAddr, jdbcType=VARCHAR},</if>
+			<if test="method != null">#{method, jdbcType=VARCHAR},</if>
+			<if test="params != null">#{params, jdbcType=LONGVARCHAR},</if>
+			<if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+
+	<select id="selectByPrimaryKey" resultMap="SysLogModelResultMap" parameterType="java.lang.Long">
+		SELECT id,request_uri,request_object,type,remote_addr,method,params,create_time FROM sys_log
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</select>
+
+</mapper>

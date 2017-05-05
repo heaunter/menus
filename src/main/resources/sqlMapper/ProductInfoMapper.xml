@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.ProductInfoDao">
+
+	<resultMap id="ProductInfoModelResultMap" type="com.vota.reservation.modules.cms.entity.model.ProductInfoModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="imageUrl" column="image_url" jdbcType="VARCHAR" />
+		<result property="price" column="price" jdbcType="DOUBLE" />
+		<result property="description" column="description" jdbcType="VARCHAR" />
+		<result property="category" column="category" jdbcType="BIGINT" />
+		<result property="isBreakfast" column="is_breakfast" jdbcType="SMALLINT" />
+		<result property="isLunch" column="is_lunch" jdbcType="SMALLINT" />
+		<result property="isDinner" column="is_dinner" jdbcType="SMALLINT" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="getAllMeals" resultMap="ProductInfoModelResultMap">
+		SELECT
+		id,name,image_url,price,description,category,is_breakfast,is_lunch,is_dinner,create_time,update_time
+		FROM product_info
+		ORDER BY convert(name using GBK) ASC
+		LIMIT #{cursor},#{size}
+	</select>
+
+	<select id="getMeals" resultMap="ProductInfoModelResultMap">
+		SELECT
+		id,name,image_url,price,description,category,is_breakfast,is_lunch,is_dinner,create_time,update_time
+		FROM
+		product_info
+		<if test="categoryId != null and categoryId !=0">
+			WHERE category = #{categoryId}
+		</if>
+		ORDER BY convert(name using GBK) ASC
+		LIMIT #{cursor},#{size}
+	</select>
+
+	<delete id="delete" parameterType="java.lang.Long">
+		DELETE FROM product_info
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</delete>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.ProductInfoModel">
+		INSERT INTO product_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null">name,</if>
+			<if test="imageUrl != null">image_url,</if>
+			<if test="price != null">price,</if>
+			<if test="description != null">description,</if>
+			<if test="category != null">category,</if>
+			<if test="isBreakfast != null">is_breakfast,</if>
+			<if test="isLunch != null">is_lunch,</if>
+			<if test="isDinner != null">is_dinner,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="updateTime != null">update_time,</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="name != null">#{name, jdbcType=VARCHAR},</if>
+			<if test="imageUrl != null">#{imageUrl, jdbcType=VARCHAR},</if>
+			<if test="price != null">#{price, jdbcType=DOUBLE},</if>
+			<if test="description != null">#{description, jdbcType=VARCHAR},</if>
+			<if test="category != null">#{category, jdbcType=BIGINT},</if>
+			<if test="isBreakfast != null">#{isBreakfast, jdbcType=SMALLINT},</if>
+			<if test="isLunch != null">#{isLunch, jdbcType=SMALLINT},</if>
+			<if test="isDinner != null">#{isDinner, jdbcType=SMALLINT},</if>
+			<if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">#{updateTime, jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+
+	<select id="getMeal" resultMap="ProductInfoModelResultMap">
+		select * from product_info where id = #{id}
+	</select>
+
+	<select id="getMealCount" resultType="long">
+		select count(*) from product_info
+	</select>
+
+	<update id="update" parameterType="com.vota.reservation.modules.cms.entity.model.ProductInfoModel">
+		UPDATE product_info
+		<set>
+			<if test="name != null">name = #{name, jdbcType=VARCHAR},</if>
+			<if test="imageUrl != null">image_url = #{imageUrl, jdbcType=VARCHAR},</if>
+			<if test="price != null">price = #{price, jdbcType=DOUBLE},</if>
+			<if test="description != null">description = #{description, jdbcType=VARCHAR},</if>
+			<if test="category != null">category = #{category, jdbcType=BIGINT},</if>
+			<if test="isBreakfast != null">is_breakfast = #{isBreakfast, jdbcType=SMALLINT},</if>
+			<if test="isLunch != null">is_lunch = #{isLunch, jdbcType=SMALLINT},</if>
+			<if test="isDinner != null">is_dinner = #{isDinner, jdbcType=SMALLINT},</if>
+			<if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			id = #{id, jdbcType=BIGINT}
+		</where>
+	</update>
+
+	<select id="selectByName" resultMap="ProductInfoModelResultMap">
+		select * from product_info where name = #{name} limit 1
+	</select>
+
+	<select id="getMealReport" resultType="com.vota.reservation.modules.cms.entity.dto.MealReportDto">
+		select pi.patient_no as patientNo,tmp.count,pi.name as username,si.area_name as areaName,bi.bed_name as bedName from
+		(select user_id,sum(oi.count) as count from orders
+		o inner join order_item oi on o.id = oi.order_id
+		where o.consume_date
+		= #{date} and
+		oi.product_id = #{mealId}
+		and o.period = #{period}
+		group by user_id) as tmp inner join patient_info pi on
+		tmp.user_id = pi.id inner join
+		sick_area_info si on si.id =
+		pi.area_id inner join sick_bed_info bi on pi.bed_id = bi.id
+		order by si.area_no,bi.bed_name
+	</select>
+
+</mapper>

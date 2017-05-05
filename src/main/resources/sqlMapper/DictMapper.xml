@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.SysDictDao">
+
+    <resultMap id="SysDictModelResultMap" type="com.vota.reservation.modules.cms.entity.model.DictModel">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.DictModel">
+        INSERT INTO sys_dict (code,name,description,create_time,update_time)
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{id, jdbcType=BIGINT},
+            #{code, jdbcType=VARCHAR},
+            #{name, jdbcType=VARCHAR},
+            #{description, jdbcType=VARCHAR},
+            #{createTime, jdbcType=TIMESTAMP},
+            #{updateTime, jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO sys_dict (code,name,description,create_time,update_time)
+        <trim prefix="VALUES" suffixOverrides=",">
+            <if test="list != null">
+                <foreach collection="list" item="item" index="index" separator=",">
+                    <trim prefix="(" suffix=")" suffixOverrides=",">
+                        #{item.id, jdbcType=BIGINT},
+                        #{item.code, jdbcType=VARCHAR},
+                        #{item.name, jdbcType=VARCHAR},
+                        #{item.description, jdbcType=VARCHAR},
+                        #{item.createTime, jdbcType=TIMESTAMP},
+                        #{item.updateTime, jdbcType=TIMESTAMP},
+                    </trim>
+                </foreach>
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.DictModel">
+        INSERT INTO sys_dict
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="code != null">code,</if>
+            <if test="name != null">name,</if>
+            <if test="description != null">description,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id, jdbcType=BIGINT},</if>
+            <if test="code != null">#{code, jdbcType=VARCHAR},</if>
+            <if test="name != null">#{name, jdbcType=VARCHAR},</if>
+            <if test="description != null">#{description, jdbcType=VARCHAR},</if>
+            <if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">#{updateTime, jdbcType=TIMESTAMP},</if>
+        </trim>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="SysDictModelResultMap" parameterType="java.lang.Long">
+        SELECT id,code,name,description,create_time,update_time FROM sys_dict
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="selectBatchByPrimaryKey" resultMap="SysDictModelResultMap" parameterType="java.util.List">
+        SELECT id,code,name,description,create_time,update_time FROM sys_dict
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByParams" resultMap="SysDictModelResultMap" parameterType="java.util.HashMap">
+        SELECT id,code,name,description,create_time,update_time FROM sys_dict
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="code != null">
+                AND code = #{code, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                AND description = #{description, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC
+        <if test="offset != null and size != null">LIMIT #{offset}, #{size}</if>
+    </select>
+
+    <select id="countByParams" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        SELECT COUNT(1) FROM sys_dict
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="code != null">
+                AND code = #{code, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                AND description = #{description, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFirstByParams" resultMap="SysDictModelResultMap" parameterType="java.util.HashMap">
+        SELECT id,code,name,description,create_time,update_time FROM sys_dict
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="code != null">
+                AND code = #{code, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                AND description = #{description, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.vota.reservation.modules.cms.entity.model.DictModel">
+        UPDATE sys_dict
+        <set>
+            <if test="code != null">code = #{code, jdbcType=VARCHAR},</if>
+            <if test="name != null">name = #{name, jdbcType=VARCHAR},</if>
+            <if test="description != null">description = #{description, jdbcType=VARCHAR},</if>
+            <if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.vota.reservation.modules.cms.entity.model.DictModel">
+        UPDATE sys_dict
+        <set>
+            code = #{code, jdbcType=VARCHAR},
+            name = #{name, jdbcType=VARCHAR},
+            description = #{description, jdbcType=VARCHAR},
+            create_time = #{createTime, jdbcType=TIMESTAMP},
+            update_time = #{updateTime, jdbcType=TIMESTAMP},
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM sys_dict
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteBatchByPrimaryKey" parameterType="java.util.List">
+        DELETE FROM sys_dict
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN (" separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="deleteByParams" parameterType="java.util.HashMap">
+        DELETE FROM sys_dict
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="code != null">
+                AND code = #{code, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                AND description = #{description, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+</mapper>

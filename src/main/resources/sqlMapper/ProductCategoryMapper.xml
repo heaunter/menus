@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.ProductCategoryDao">
+
+	<resultMap id="ProductCategoryModelResultMap"
+		type="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="parentId" column="parent_id" jdbcType="BIGINT" />
+		<result property="sort" column="sort" jdbcType="SMALLINT" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+	<select id="getAllMealCategories" resultMap="ProductCategoryModelResultMap">
+		SELECT
+		id,name,parent_id,sort,create_time,update_time FROM product_category
+		order by sort ASC
+	</select>
+
+	<delete id="delete" parameterType="java.lang.Long">
+		DELETE FROM product_category
+		<where>
+			id = #{id, jdbcType=BIGINT}
+		</where>
+	</delete>
+
+	<insert id="insertCaregory" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		INSERT INTO product_category
+		(name,sort)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{name,
+			jdbcType=VARCHAR},
+			#{sort, jdbcType=SMALLINT},
+		</trim>
+	</insert>
+
+	<select id="getCategory" resultMap="ProductCategoryModelResultMap" parameterType="java.lang.Long">
+		SELECT id,name,parent_id,sort,create_time,update_time FROM
+		product_category
+		<where>
+			id = #{id, jdbcType=BIGINT}
+		</where>
+	</select>
+
+	<update id="update" parameterType="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		UPDATE product_category
+		<set>
+			<if test="name != null">name = #{name, jdbcType=VARCHAR},</if>
+			<if test="parentId != null">parent_id = #{parentId, jdbcType=BIGINT},</if>
+			<if test="sort != null">sort = #{sort, jdbcType=SMALLINT},</if>
+			<if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			id = #{id, jdbcType=BIGINT}
+		</where>
+	</update>
+
+	<select id="selectByName" parameterType="string" resultMap="ProductCategoryModelResultMap">
+		SELECT
+		id,name,parent_id,sort,create_time,update_time FROM product_category
+		where name = #{name}
+		limit 1
+	</select>
+
+
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		INSERT INTO product_category
+		(name,parent_id,sort,create_time,update_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{id,
+			jdbcType=BIGINT},
+			#{name,
+			jdbcType=VARCHAR},
+			#{parentId,
+			jdbcType=BIGINT},
+			#{sort, jdbcType=SMALLINT},
+			#{createTime,
+			jdbcType=TIMESTAMP},
+			#{updateTime, jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		INSERT INTO product_category
+		(name,parent_id,sort,create_time,update_time)
+		<trim prefix="VALUES" suffixOverrides=",">
+			<if test="list != null">
+				<foreach collection="list" item="item" index="index" separator=",">
+					<trim prefix="(" suffix=")" suffixOverrides=",">
+						#{item.id,
+						jdbcType=BIGINT},
+						#{item.name, jdbcType=VARCHAR},
+						#{item.parentId,
+						jdbcType=BIGINT},
+						#{item.sort,
+						jdbcType=SMALLINT},
+						#{item.createTime, jdbcType=TIMESTAMP},
+						#{item.updateTime,
+						jdbcType=TIMESTAMP},
+					</trim>
+				</foreach>
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		INSERT INTO product_category
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="name != null">name,</if>
+			<if test="parentId != null">parent_id,</if>
+			<if test="sort != null">sort,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="updateTime != null">update_time,</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id, jdbcType=BIGINT},</if>
+			<if test="name != null">#{name, jdbcType=VARCHAR},</if>
+			<if test="parentId != null">#{parentId, jdbcType=BIGINT},</if>
+			<if test="sort != null">#{sort, jdbcType=SMALLINT},</if>
+			<if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">#{updateTime, jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+
+	<select id="selectByPrimaryKey" resultMap="ProductCategoryModelResultMap"
+		parameterType="java.lang.Long">
+		SELECT id,name,parent_id,sort,create_time,update_time FROM
+		product_category
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<select id="selectBatchByPrimaryKey" resultMap="ProductCategoryModelResultMap"
+		parameterType="java.util.List">
+		SELECT id,name,parent_id,sort,create_time,update_time FROM
+		product_category
+		<where>
+			<if test="list != null">
+				<foreach collection="list" index="index" item="id" open=" id IN (" separator=","
+					close=")">
+					#{id, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="selectByParams" resultMap="ProductCategoryModelResultMap"
+		parameterType="java.util.HashMap">
+		SELECT id,name,parent_id,sort,create_time,update_time FROM
+		product_category
+		<where>
+			<if test="id != null">
+				AND id = #{id, jdbcType=BIGINT}
+			</if>
+			<if test="name != null">
+				AND name = #{name, jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null">
+				AND parent_id = #{parentId, jdbcType=BIGINT}
+			</if>
+			<if test="sort != null">
+				AND sort = #{sort, jdbcType=SMALLINT}
+			</if>
+			<if test="createTime != null">
+				AND create_time = #{createTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateTime != null">
+				AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="ids != null">
+				<foreach collection="ids" index="index" item="id" open=" AND id IN ("
+					separator="," close=")">
+					#{id, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY id DESC
+		<if test="offset != null and size != null">LIMIT #{offset}, #{size}</if>
+	</select>
+
+	<select id="countByParams" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		SELECT COUNT(1) FROM product_category
+		<where>
+			<if test="id != null">
+				AND id = #{id, jdbcType=BIGINT}
+			</if>
+			<if test="name != null">
+				AND name = #{name, jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null">
+				AND parent_id = #{parentId, jdbcType=BIGINT}
+			</if>
+			<if test="sort != null">
+				AND sort = #{sort, jdbcType=SMALLINT}
+			</if>
+			<if test="createTime != null">
+				AND create_time = #{createTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateTime != null">
+				AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="ids != null">
+				<foreach collection="ids" index="index" item="id" open=" AND id IN ("
+					separator="," close=")">
+					#{id, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="selectFirstByParams" resultMap="ProductCategoryModelResultMap"
+		parameterType="java.util.HashMap">
+		SELECT id,name,parent_id,sort,create_time,update_time FROM
+		product_category
+		<where>
+			<if test="id != null">
+				AND id = #{id, jdbcType=BIGINT}
+			</if>
+			<if test="name != null">
+				AND name = #{name, jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null">
+				AND parent_id = #{parentId, jdbcType=BIGINT}
+			</if>
+			<if test="sort != null">
+				AND sort = #{sort, jdbcType=SMALLINT}
+			</if>
+			<if test="createTime != null">
+				AND create_time = #{createTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateTime != null">
+				AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="ids != null">
+				<foreach collection="ids" index="index" item="id" open=" AND id IN ("
+					separator="," close=")">
+					#{id, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY id DESC LIMIT 1
+	</select>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		UPDATE product_category
+		<set>
+			<if test="name != null">name = #{name, jdbcType=VARCHAR},</if>
+			<if test="parentId != null">parent_id = #{parentId, jdbcType=BIGINT},</if>
+			<if test="sort != null">sort = #{sort, jdbcType=SMALLINT},</if>
+			<if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.vota.reservation.modules.cms.entity.model.ProductCategoryModel">
+		UPDATE product_category
+		<set>
+			name = #{name, jdbcType=VARCHAR},
+			parent_id = #{parentId,
+			jdbcType=BIGINT},
+			sort =
+			#{sort, jdbcType=SMALLINT},
+			create_time =
+			#{createTime, jdbcType=TIMESTAMP},
+			update_time =
+			#{updateTime,
+			jdbcType=TIMESTAMP},
+		</set>
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<update id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		DELETE FROM product_category
+		<where>
+			id = #{id, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<update id="deleteBatchByPrimaryKey" parameterType="java.util.List">
+		DELETE FROM product_category
+		<where>
+			<if test="list != null">
+				<foreach collection="list" index="index" item="id" open=" id IN (" separator=","
+					close=")">
+					#{id, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</update>
+
+	<update id="deleteByParams" parameterType="java.util.HashMap">
+		DELETE FROM product_category
+		<where>
+			<if test="id != null">
+				AND id = #{id, jdbcType=BIGINT}
+			</if>
+			<if test="name != null">
+				AND name = #{name, jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null">
+				AND parent_id = #{parentId, jdbcType=BIGINT}
+			</if>
+			<if test="sort != null">
+				AND sort = #{sort, jdbcType=SMALLINT}
+			</if>
+			<if test="createTime != null">
+				AND create_time = #{createTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateTime != null">
+				AND update_time = #{updateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</update>
+</mapper>

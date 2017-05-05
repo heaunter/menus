@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.OrderDao">
+
+	<resultMap id="OrderModelResultMap" type="com.vota.reservation.modules.cms.entity.model.OrderModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="userId" column="user_id" jdbcType="VARCHAR" />
+		<result property="orderNo" column="order_no" jdbcType="VARCHAR" />
+		<result property="price" column="price" jdbcType="DOUBLE" />
+		<result property="status" column="status" jdbcType="TINYINT" />
+		<result property="consumeDate" column="consume_date" jdbcType="DATE" />
+		<result property="period" column="period" jdbcType="INTEGER" />
+		<result property="itemCount" column="item_count" jdbcType="TINYINT" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="OrderItemModelResultMap" type="com.vota.reservation.modules.cms.entity.model.OrderItemModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="orderId" column="order_id" jdbcType="BIGINT" />
+		<result property="productId" column="product_id" jdbcType="BIGINT" />
+		<result property="productName" column="product_name" jdbcType="VARCHAR" />
+		<result property="price" column="price" jdbcType="DOUBLE" />
+		<result property="count" column="count" jdbcType="INTEGER" />
+		<result property="mark" column="mark" jdbcType="VARCHAR" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="QueryOrdersResultMap" type="com.vota.reservation.modules.cms.entity.bean.OrderBean">
+		<id property="orderId" column="order_id" jdbcType="BIGINT" />
+		<result property="orderNo" column="order_no" jdbcType="VARCHAR" />
+		<result property="userId" column="user_id" jdbcType="BIGINT" />
+		<result property="patientNo" column="patient_no" jdbcType="VARCHAR" />
+		<result property="areaName" column="area_name" jdbcType="VARCHAR" />
+		<result property="price" column="total_price" jdbcType="DOUBLE" />
+		<result property="itemCount" column="item_count" jdbcType="INTEGER" />
+		<result property="consumeDate" column="consume_date" jdbcType="DATE" />
+		<result property="period" column="period" jdbcType="INTEGER" />
+		<result property="status" column="status" jdbcType="SMALLINT" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+		<collection property="items" column="id" ofType="com.vota.reservation.modules.cms.entity.bean.OrderItemBean">
+			<id property="id" column="item_id" jdbcType="BIGINT" />
+			<result property="orderId" column="item_order_id" jdbcType="BIGINT" />
+			<result property="productId" column="product_id" jdbcType="BIGINT" />
+			<result property="productName" column="product_name" jdbcType="VARCHAR" />
+			<result property="price" column="price" jdbcType="DOUBLE" />
+			<result property="count" column="count" jdbcType="INTEGER" />
+			<result property="mark" column="mark" jdbcType="VARCHAR" />
+			<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+		</collection>
+	</resultMap>
+
+	<insert id="saveOrder" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.vota.reservation.modules.cms.entity.model.OrderModel">
+		INSERT INTO orders
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">user_id,</if>
+			<if test="itemCount != null">item_count,</if>
+			<if test="orderNo != null">order_no,</if>
+			<if test="price != null">price,</if>
+			<if test="status != null">status,</if>
+			<if test="consumeDate != null">consume_date,</if>
+			<if test="period != null">period,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="updateTime != null">update_time,</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">#{userId, jdbcType=VARCHAR},</if>
+			<if test="itemCount != null">#{itemCount, jdbcType=INTEGER},</if>
+			<if test="orderNo != null">#{orderNo, jdbcType=VARCHAR},</if>
+			<if test="price != null">#{price, jdbcType=DOUBLE},</if>
+			<if test="status != null">#{status, jdbcType=TINYINT},</if>
+			<if test="consumeDate != null">#{consumeDate, jdbcType=DATE},</if>
+			<if test="period != null">#{period, jdbcType=VARCHAR},</if>
+			<if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">#{updateTime, jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+
+	<select id="queryOrderCount" resultType="long">
+		select count(*) from orders where user_id=
+		#{userId}
+	</select>
+
+	<insert id="saveOrderItems">
+		INSERT INTO order_item
+		(order_id,product_id,product_name,price,count,mark,create_time,update_time)
+		<trim prefix="VALUES" suffixOverrides=",">
+			<if test="items != null">
+				<foreach collection="items" item="item" index="index" separator=",">
+					<trim prefix="(" suffix=")" suffixOverrides=",">
+						#{orderId, jdbcType=BIGINT},
+						#{item.productId, jdbcType=BIGINT},
+						#{item.productName, jdbcType=VARCHAR},
+						#{item.price, jdbcType=DOUBLE},
+						#{item.count, jdbcType=INTEGER},
+						#{item.mark,
+						jdbcType=VARCHAR},
+						#{item.createTime, jdbcType=TIMESTAMP},
+						#{item.updateTime,
+						jdbcType=TIMESTAMP},
+					</trim>
+				</foreach>
+			</if>
+		</trim>
+	</insert>
+
+	<select id="queryOrders" resultMap="QueryOrdersResultMap">
+		SELECT o.id as order_id,
+		o.user_id,
+		pi.patient_no,
+		o.order_no,
+		o.price as total_price,
+		o.consume_date,
+		o.period,
+		o.status,
+		o.item_count,
+		o.update_time as order_update_time,
+		it.id
+		as item_id,
+		it.order_id as item_order_id,
+		it.product_id,
+		it.product_name,
+		it.price,
+		it.count,
+		it.mark,
+		it.update_time
+		FROM orders o
+		left join order_item it on o.id =
+		it.order_id
+		left
+		join
+		patient_info pi on o.user_id = pi.id
+		WHERE o.create_time >
+		DATE_ADD(CURDATE(),INTERVAL
+		-30 DAY)
+		<if test="patientNo!=null and patientNo !=''">
+			AND pi.patient_no = #{patientNo}
+		</if>
+		order by o.create_time desc
+		limit #{cursor}, #{size}
+	</select>
+
+	<select id="queryAllOrders" resultMap="QueryOrdersResultMap">
+		SELECT o.id as order_id,
+		o.user_id,
+		pi.patient_no,
+		ai.area_name,
+		o.order_no,
+		o.price as total_price,
+		o.consume_date,
+		o.period,
+		o.status,
+		o.item_count,
+		o.create_time as order_update_time,
+		it.id
+		as item_id,
+		it.order_id as
+		item_order_id,
+		it.product_id,
+		it.product_name,
+		it.price,
+		it.count,
+		it.mark,
+		it.update_time
+		FROM orders o
+		left join order_item it on o.id =
+		it.order_id
+		left
+		join
+		patient_info pi on
+		o.user_id = pi.id
+		left join
+		sick_area_info ai on pi.area_id = ai.id
+		where o.consume_date = #{date}
+		and o.status = #{status}
+		<if test="period !=''">
+			and o.period = #{period}
+		</if>
+		<if test="areaNos != null">
+			<foreach collection="areaNos" index="index" item="areaNo" open=" and ai.area_no IN (" separator="," close=")">
+				#{areaNo, jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		order by o.create_time desc
+		limit #{cursor}, #{size}
+	</select>
+
+	<select id="getPrepareMaterialReport" resultType="com.vota.reservation.modules.cms.entity.bean.PrepareReportBean">
+		select
+		o.period,it.product_name as
+		name,sum(it.count) as
+		amount,o.consume_date as datetime,it.price*sum(it.count) as price
+		from
+		order_item it inner join
+		orders o on
+		it.order_id =
+		o.id where o.status = 1 and
+		o.consume_date = #{date} and o.period = #{period}
+		group by period,product_id order by
+		sum(it.count) desc
+	</select>
+
+	<select id="getAllPrepareMaterialReport" resultType="com.vota.reservation.modules.cms.entity.bean.PrepareReportBean">
+		select
+		it.product_name as
+		name,sum(it.count) as
+		amount,o.consume_date as datetime,it.price*sum(it.count) as price
+		from
+		order_item it inner join
+		orders o on
+		it.order_id =
+		o.id where o.status = 1 and
+		o.consume_date = #{date}
+		group by product_id order by
+		sum(it.count) desc
+	</select>
+
+	<select id="getDeliveryReport" resultType="com.vota.reservation.modules.cms.entity.bean.DeliveryReportInnerBean">
+		select
+		pi.patient_no as cardNo,pi.name as
+		username,di.area_name as
+		areaName,bi.bed_name as bedName,it.product_id as productId,
+		it.count,it.product_name as productName
+		,it.price
+		from
+		order_item it inner join orders o
+		on
+		it.order_id = o.id inner join patient_info pi
+		on o.user_id = pi.id inner join
+		sick_bed_info bi on
+		bi.id = pi.bed_id
+		inner join
+		sick_area_info di on pi.area_id = di.id
+		where o.period = #{period} and
+		o.consume_date= #{date} and o.status = 1
+		order by
+		di.area_name,bi.bed_name,product_id
+	</select>
+
+	<select id="getOrder" resultType="com.vota.reservation.modules.cms.entity.model.OrderModel">
+		SELECT * FROM orders WHERE order_no = #{orderNo}
+	</select>
+
+	<update id="updateOrderStatus">
+		UPDATE orders set status = #{status, jdbcType=TINYINT}
+		<where>
+			order_no = #{orderNo, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<select id="getSummaryPrepareMaterialReport" resultType="com.vota.reservation.modules.cms.entity.bean.PrepareReportBean">
+		select o.period,
+		it.product_name as
+		name,sum(it.count) as amount,o.consume_date as
+		`datetime`,it.price*sum(it.count) as
+		price
+		from
+		order_item it inner join
+		orders o on
+		it.order_id = o.id where o.status = 1 and
+		o.consume_date = #{date} and
+		o.period =
+		#{period}
+		and o.user_id in
+		(select pi.id from patient_info pi inner
+		join sick_area_info ai
+		on pi.area_id = ai.id
+		<where>
+			<if test="list != null">
+				<foreach collection="list" index="index" item="areaNo" open=" ai.area_no IN (" separator="," close=")">
+					#{areaNo, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+		)
+		group by product_id
+		order by sum(it.count) desc
+	</select>
+
+	<select id="getAllSummaryPrepareMaterialReport" resultType="com.vota.reservation.modules.cms.entity.bean.PrepareReportBean">
+		select
+		it.product_name as
+		name,sum(it.count) as amount,o.consume_date as
+		`datetime`,it.price*sum(it.count) as
+		price
+		from
+		order_item it inner join
+		orders o on
+		it.order_id = o.id where o.status = 1 and
+		o.consume_date = #{date}
+		and o.user_id in
+		(select pi.id from patient_info pi inner
+		join sick_area_info ai on pi.area_id = ai.id
+		<where>
+			<if test="list != null">
+				<foreach collection="list" index="index" item="areaNo" open=" ai.area_no IN (" separator="," close=")">
+					#{areaNo, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+		)
+		group by product_id
+		order by sum(it.count) desc
+	</select>
+
+</mapper>

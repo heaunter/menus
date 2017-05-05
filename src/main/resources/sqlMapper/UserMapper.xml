@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.UserDao">
+
+    <resultMap id="SysUserModelResultMap"
+               type="com.vota.reservation.modules.cms.entity.model.SysUserModel">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="loginId" column="login_id" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="lastLoginTime" column="last_login_time"
+                jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="login" resultMap="SysUserModelResultMap">
+		SELECT
+		id,login_id,password,email,name,avatar,last_login_time FROM sys_user
+		WHERE login_id = #{loginId} and password = #{password}
+	</select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.SysUserModel">
+        INSERT INTO sys_user
+        (login_id,password,email,name,avatar,last_login_time)
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{id,
+            jdbcType=BIGINT},
+            #{loginId, jdbcType=VARCHAR},
+            #{password,
+            jdbcType=VARCHAR},
+            #{email, jdbcType=VARCHAR},
+            #{name,
+            jdbcType=VARCHAR},
+            #{avatar, jdbcType=VARCHAR},
+            #{lastLoginTime,
+            jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO sys_user
+        (login_id,password,email,name,avatar,last_login_time)
+        <trim prefix="VALUES" suffixOverrides=",">
+            <if test="list != null">
+                <foreach collection="list" item="item" index="index"
+                         separator=",">
+                    <trim prefix="(" suffix=")" suffixOverrides=",">
+                        #{item.id,
+                        jdbcType=BIGINT},
+                        #{item.loginId, jdbcType=VARCHAR},
+                        #{item.password, jdbcType=VARCHAR},
+                        #{item.email,
+                        jdbcType=VARCHAR},
+                        #{item.name, jdbcType=VARCHAR},
+                        #{item.avatar,
+                        jdbcType=VARCHAR},
+                        #{item.lastLoginTime, jdbcType=TIMESTAMP},
+                    </trim>
+                </foreach>
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true"
+            keyProperty="id"
+            parameterType="com.vota.reservation.modules.cms.entity.model.SysUserModel">
+        INSERT INTO sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="loginId != null">login_id,</if>
+            <if test="password != null">password,</if>
+            <if test="email != null">email,</if>
+            <if test="name != null">name,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="lastLoginTime != null">last_login_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id, jdbcType=BIGINT},</if>
+            <if test="loginId != null">#{loginId, jdbcType=VARCHAR},</if>
+            <if test="password != null">#{password, jdbcType=VARCHAR},</if>
+            <if test="email != null">#{email, jdbcType=VARCHAR},</if>
+            <if test="name != null">#{name, jdbcType=VARCHAR},</if>
+            <if test="avatar != null">#{avatar, jdbcType=VARCHAR},</if>
+            <if test="lastLoginTime != null">#{lastLoginTime, jdbcType=TIMESTAMP},</if>
+        </trim>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="SysUserModelResultMap"
+            parameterType="java.lang.Long">
+        SELECT id,login_id,password,email,name,avatar,last_login_time FROM
+        sys_user
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="selectBatchByPrimaryKey" resultMap="SysUserModelResultMap"
+            parameterType="java.util.List">
+        SELECT id,login_id,password,email,name,avatar,last_login_time FROM
+        sys_user
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByParams" resultMap="SysUserModelResultMap"
+            parameterType="java.util.HashMap">
+        SELECT id,login_id,password,email,name,avatar,last_login_time FROM
+        sys_user
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="loginId != null">
+                AND login_id = #{loginId, jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                AND password = #{password, jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                AND email = #{email, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="avatar != null">
+                AND avatar = #{avatar, jdbcType=VARCHAR}
+            </if>
+            <if test="lastLoginTime != null">
+                AND last_login_time = #{lastLoginTime,
+				jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC
+        <if test="offset != null and size != null">LIMIT #{offset}, #{size}</if>
+    </select>
+
+    <select id="countByParams" resultType="java.lang.Integer"
+            parameterType="java.util.HashMap">
+        SELECT COUNT(1) FROM sys_user
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="loginId != null">
+                AND login_id = #{loginId, jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                AND password = #{password, jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                AND email = #{email, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="avatar != null">
+                AND avatar = #{avatar, jdbcType=VARCHAR}
+            </if>
+            <if test="lastLoginTime != null">
+                AND last_login_time = #{lastLoginTime,
+				jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFirstByParams" resultMap="SysUserModelResultMap"
+            parameterType="java.util.HashMap">
+        SELECT id,login_id,password,email,name,avatar,last_login_time FROM
+        sys_user
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="loginId != null">
+                AND login_id = #{loginId, jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                AND password = #{password, jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                AND email = #{email, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="avatar != null">
+                AND avatar = #{avatar, jdbcType=VARCHAR}
+            </if>
+            <if test="lastLoginTime != null">
+                AND last_login_time = #{lastLoginTime,
+				jdbcType=TIMESTAMP}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+
+    <select id="getUserInfo" resultType="com.vota.reservation.modules.cms.entity.model.SysUserModel">
+
+
+    </select>
+
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.vota.reservation.modules.cms.entity.model.SysUserModel">
+        UPDATE sys_user
+        <set>
+            <if test="loginId != null">login_id = #{loginId, jdbcType=VARCHAR},</if>
+            <if test="password != null">password = #{password, jdbcType=VARCHAR},</if>
+            <if test="email != null">email = #{email, jdbcType=VARCHAR},</if>
+            <if test="name != null">name = #{name, jdbcType=VARCHAR},</if>
+            <if test="avatar != null">avatar = #{avatar, jdbcType=VARCHAR},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime, jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKey"
+            parameterType="com.vota.reservation.modules.cms.entity.model.SysUserModel">
+        UPDATE sys_user
+        <set>
+            login_id = #{loginId, jdbcType=VARCHAR},
+            password = #{password,
+			jdbcType=VARCHAR},
+            email = #{email, jdbcType=VARCHAR},
+            name = #{name,
+			jdbcType=VARCHAR},
+            avatar = #{avatar, jdbcType=VARCHAR},
+            last_login_time = #{lastLoginTime, jdbcType=TIMESTAMP},
+        </set>
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM sys_user
+        <where>
+            id = #{id, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <update id="deleteBatchByPrimaryKey" parameterType="java.util.List">
+        DELETE FROM sys_user
+        <where>
+            <if test="list != null">
+                <foreach collection="list" index="index" item="id" open=" id IN ("
+                         separator="," close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="deleteByParams" parameterType="java.util.HashMap">
+        DELETE FROM sys_user
+        <where>
+            <if test="id != null">
+                AND id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="loginId != null">
+                AND login_id = #{loginId, jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                AND password = #{password, jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                AND email = #{email, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="avatar != null">
+                AND avatar = #{avatar, jdbcType=VARCHAR}
+            </if>
+            <if test="lastLoginTime != null">
+                AND last_login_time = #{lastLoginTime,
+				jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <update id="update">
+
+
+    </update>
+</mapper>

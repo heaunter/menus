@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vota.reservation.modules.cms.dao.PatientInfoDao">
+
+	<resultMap id="PatientInfoModelResultMap" type="com.vota.reservation.modules.cms.entity.model.PatientInfoModel">
+		<id property="id" column="id" jdbcType="BIGINT" />
+		<result property="patientNo" column="patient_no" jdbcType="VARCHAR" />
+		<result property="deptId" column="dept_id" jdbcType="BIGINT" />
+		<result property="areaId" column="area_id" jdbcType="BIGINT" />
+		<result property="bedId" column="bed_id" jdbcType="BIGINT" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="sex" column="sex" jdbcType="VARCHAR" />
+		<result property="age" column="age" jdbcType="INTEGER" />
+		<result property="status" column="status" jdbcType="INTEGER" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="PatientInfoBeanResultMap" type="com.vota.reservation.modules.cms.entity.bean.PatientBean">
+		<result property="patientNo" column="patient_no" jdbcType="VARCHAR" />
+		<result property="deptId" column="dept_id" jdbcType="BIGINT" />
+		<result property="deptName" column="dept_name" jdbcType="VARCHAR" />
+		<result property="bedId" column="bed_id" jdbcType="BIGINT" />
+		<result property="bedName" column="bed_name" jdbcType="VARCHAR" />
+		<result property="username" column="name" jdbcType="VARCHAR" />
+		<result property="sex" column="sex" jdbcType="VARCHAR" />
+		<result property="age" column="age" jdbcType="INTEGER" />
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+	<select id="getAllPatients" resultMap="PatientInfoBeanResultMap">
+		select
+		p.patient_no,p.dept_id,d.dept_name,p.bed_id,b.bed_name,p.name,p.sex,p.age,p.update_time
+		from patient_info p left join
+		sick_dept_info d on p.dept_id = d.id
+		left join
+		sick_bed_info b on p.bed_id = b.id WHERE p.status = 1 and p.patient_no
+		not like '-%'
+		limit #{cursor},#{size}
+	</select>
+
+	<select id="getPatientInformation" parameterType="string"
+		resultType="com.vota.reservation.modules.cms.entity.model.PatientInfoModel">
+		SELECT * FROM patient_info WHERE patient_no = #{patientNo} AND status = 1
+	</select>
+
+	<select id="getPatientInfoById" resultType="com.vota.reservation.modules.cms.entity.model.PatientInfoModel">
+		SELECT * from patient_info WHERE id =
+		#{id}
+	</select>
+
+	<select id="getPatientInfoByNo" resultType="com.vota.reservation.modules.cms.entity.model.PatientInfoModel">
+		SELECT * from patient_info WHERE
+		patient_no = #{patientNo}
+	</select>
+
+	<select id="getAllPatientCount" resultType="long">
+		SELECT count(*) from patient_info where
+		status = 1 and patient_no not
+		like '-%'
+	</select>
+
+	<insert id="savePatientInfo" parameterType="com.vota.reservation.modules.cms.entity.model.PatientInfoModel">
+		INSERT INTO patient_info
+		(patient_no,dept_id,area_id,bed_id,name,sex,age,status,create_time,update_time)
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{patientNo, jdbcType=VARCHAR},
+			#{deptId, jdbcType=BIGINT},
+			#{areaId, jdbcType=BIGINT},
+			#{bedId, jdbcType=BIGINT},
+			#{name, jdbcType=VARCHAR},
+			#{sex,
+			jdbcType=VARCHAR},
+			#{age,
+			jdbcType=INTEGER},
+			#{status,
+			jdbcType=INTEGER},
+			#{createTime,
+			jdbcType=TIMESTAMP},
+			#{updateTime, jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+
+	<update id="updatePatientInfo" parameterType="com.vota.reservation.modules.cms.entity.model.PatientInfoModel">
+		UPDATE patient_info
+		<set>
+			<if test="deptId != null">dept_id = #{deptId, jdbcType=BIGINT},</if>
+			<if test="areaId != null">area_id = #{areaId, jdbcType=BIGINT},</if>
+			<if test="bedId != null">bed_id = #{bedId, jdbcType=BIGINT},</if>
+			<if test="name != null">name = #{name, jdbcType=VARCHAR},</if>
+			<if test="sex != null">sex = #{sex, jdbcType=VARCHAR},</if>
+			<if test="age != null">age = #{age, jdbcType=INTEGER},</if>
+			<if test="status != null">status = #{status, jdbcType=INTEGER},</if>
+			<if test="createTime != null">create_time = #{createTime, jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">update_time = #{updateTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			patient_no = #{patientNo, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<update id="updatePortionPatientInfo">
+		UPDATE patient_info
+		<set>
+			<if test="status != null">status = #{status, jdbcType=INTEGER},</if>
+			<if test="outHosTime != null">out_hos_time = #{outHosTime, jdbcType=TIMESTAMP},</if>
+		</set>
+		<where>
+			patient_no = #{patientNo, jdbcType=VARCHAR}
+		</where>
+	</update>
+
+	<select id="getPatientInfoByDepts" resultMap="PatientInfoModelResultMap">
+		SELECT pi.* FROM patient_info pi inner join sick_dept_info di on pi.dept_id = di.id
+		<where>
+			<if test="list != null and list.size()>0">
+				<foreach collection="list" index="index" item="id" open=" di.id IN (" separator="," close=")">
+					#{id,
+					jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="getPatientInfoByAreas" resultMap="PatientInfoModelResultMap">
+		SELECT pi.* FROM patient_info pi inner join sick_area_info di on pi.area_id = di.id
+		<where>
+			<if test="list != null and list.size()>0">
+				<foreach collection="list" index="index" item="areaNo" open=" di.area_no IN (" separator="," close=")">
+					#{areaNo, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+</mapper>

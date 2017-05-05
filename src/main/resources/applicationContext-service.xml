@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <util:properties id="variables"
+                     location="classpath:properties/variables.properties"/>
+
+    <!-- 引入属性配置文件 -->
+    <bean class="com.vota.reservation.common.util.PropertiesUtil">
+        <property name="locations">
+            <list>
+                <value>classpath:properties/variables.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <context:annotation-config/>
+    <!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
+    <context:component-scan base-package="com.vota.reservation">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Service"/>
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Component"/>
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <context:component-scan base-package="com.vota.reservation.modules.job">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Component"/>
+    </context:component-scan>
+
+    <task:scheduler id="jobScheduler" pool-size="5"/>
+    <task:executor id="jobExecutor" pool-size="5"/>
+
+    <task:annotation-driven scheduler="jobScheduler"
+                            executor="jobExecutor"/>
+
+
+    <!-- 启用AspectJ对Annotation的支持 -->
+    <aop:aspectj-autoproxy/>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>
